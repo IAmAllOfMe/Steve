@@ -13,27 +13,37 @@ using namespace std;
 
 int main()
 {
-	float G = 6.67*(10 ^ -11);//gravitational constant
-	float Ms = 1.99*(10 ^ 30);//mass of sun
-	float Me = 5.97*(10 ^ 24);//mass of earth
+	float G = 6.67*pow(10,-11);//gravitational constant
+	float Ms = 1.99*pow(10,30);//mass of sun
+	float Me = 5.97*pow(10,24);//mass of earth
 	float k = -G*(Ms+Me);//total constant for 2 body problem with 1 body of mass Me
-	float r = 1.50*(10 ^ 8); //initial distance = 1au. Value given here in km
+	float x = 1.50*pow(10,11), y = 0; //initial distance = 1au in x direction, 0 in y direction. Value given here in mm
 	float t = 0; //initial time is 0
-	float a; //a is acceleration
-	float v = 0;//initial velocity set to 0
-	float deltaT = 1000 * 3.15*(10 ^ 7); // 3.15*10^7 is the number of seconds in a year, so here deltaT = 1000yrs
+	float ax, ay; //a is acceleration
+	float vx = 0, vy = 30000;//initial velocity set to 0 in x direction, 30 km/s in y directio 
+	float deltaT = 48*3600; // deltaT is measured in seconds; 3600 is the number of seconds in an hour; 48 is the number of hours in two days, so deltaT = 2 days 
+	float r = sqrt((x*x) + (y*y));// r is the straight line distance between the two bodies
 	int j;
+	cout << "k = "<< k << endl;
 	for (j = 0; j < 5; j++)//we repeat the simulation 5 times
+		
 	{
-		a = k / (r*r);
-		cout << "a =" << a << endl;
-		v = v + deltaT*a;
-		cout << "v = " << v << endl;
-		r = r + deltaT*v;
+		cout << "ROUND " << j + 1 << endl;
+		ax = (k*x) / pow(r, 3);
+		cout << "ax = " << ax << endl;
+		ay = (k*y) / pow(r, 3);
+		cout << "ay = " << ay <<endl;
+		vx = vx + deltaT*ax;
+		cout << "vx = " << vx << endl;
+		vy = vy + deltaT*ay;
+		cout << "vy = " << vy << endl;
+		x = x + deltaT*vx;
+		cout << "x = " << x << endl;
+		y = y + deltaT*vy;
+		cout << "y = " << y << endl;
+		r = sqrt((x*x) + (y*y));
 		cout << "r = " << r << endl;
-		//cout << "r/initial r =" << r / 1.5*(10 ^ 8) << endl;
-		cout << "NEXT ROUND" << endl;
-
+		
 
 
 	}
