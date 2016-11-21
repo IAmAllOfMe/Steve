@@ -24,8 +24,12 @@ int main()
 	float deltaT = 48*3600; // deltaT is measured in seconds; 3600 is the number of seconds in an hour; 48 is the number of hours in two days, so deltaT = 2 days 
 	float r = sqrt((x*x) + (y*y));// r is the straight line distance between the two bodies
 	int j;
+	ofstream mehfile;
+	mehfile.open("data.txt", ios::trunc);
+	ofstream secondfile;
+		secondfile.open("data2.txt");
 	cout << "k = "<< k << endl;
-	for (j = 0; j < 5; j++)//we repeat the simulation 5 times
+	for (j = 0; j < 190; j++)//we repeat the simulation 5 times
 		
 	{
 		cout << "ROUND " << j + 1 << endl;
@@ -44,9 +48,11 @@ int main()
 		r = sqrt((x*x) + (y*y));
 		cout << "r = " << r << endl;
 		
-
-
+		mehfile << x << " " << endl;
+		secondfile << y << endl;
 	}
+	mehfile.close();
+	secondfile.close();
 	float poo;
 	cout << "Insert any integer the press enter to exit." << endl;
 	cin >> poo;
