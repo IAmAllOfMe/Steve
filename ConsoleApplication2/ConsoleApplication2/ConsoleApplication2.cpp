@@ -13,20 +13,21 @@ using namespace std;
 
 int main()
 {
-	float G = 6.67*pow(10,-11);//gravitational constant in SI units
-	float Ms = 1.99*pow(10,30);//mass of sun in kg
-	float Me = 5.97*pow(10,24);//mass of earth in kg
+	float G = 6.67408*pow(10,-11);//gravitational constant in SI units
+	float Ms = 1.98855*pow(10,30);//mass of sun in kg
+	float Me = 5.9722*pow(10,24);//mass of earth in kg
 	float k = -G*(Ms+Me);//total constant for 2 body problem with 1 body of mass Me
-	float x = 1.50*pow(10,11), y = 0; 
+	float x = 1.49598*pow(10,11), y = 0; 
+	cout << "x0 = " << x << endl;
 	//initial distance = 1au in x direction, 0 in y direction. Value given here in mm
 	float t = 0; //initial time is 0
 	float ax, ay; //a is acceleration
 	float vx = 0, vy = 30000;
 	//initial velocity set to 0 in x direction, 30 km/s in y direction. 
 	//This is the speed of the Earth's orbit 
-	float deltaT = 24*3600;
+	float deltaT = 30.44*24*3600;
 	// deltaT is measured in seconds; 3600 is the number of seconds in an hour; 
-	//48 is the number of hours in two days, so deltaT = 2 days 
+	//24 is the number of hours in two days, so deltaT = 1 days 
 	float dx1 = 0, dx2 = 0, dx3 = 0, dx4, dy1 = 0, dy2 = 0, dy3 = 0, dy4, dx, dy;
 	float dvx1, dvx2, dvx3, dvx4, dvy1, dvy2, dvy3, dvy4, dvx, dvy;
 	float r = sqrt((x*x) + (y*y));// r is the straight line distance between the two bodies
@@ -44,10 +45,10 @@ int main()
 	ofstream secondfile;
 		secondfile.open("data2.txt");//save meh data pls
    cout << "k = "<< k << endl;
-	for (j = 0; j < 380000; j++)//we repeat the simulation 190 times (just over a year)
+	for (j = 0; j < 12000000; j++)//we repeat the simulation 190 times (just over a year)
 		
 	{
-		//cout << "ROUND " << j + 1 << endl;
+		cout << "ROUND " << j + 1 << endl;
 		ax = (k*x) / pow(r, 3);
 		//cout << "ax = " << ax << endl;
 		ay = (k*y) / pow(r, 3);
@@ -90,7 +91,7 @@ int main()
 		vy = vy + deltaT*ay;
 		//cout << "vy = " << vy << endl;
 	    x = x + deltaT*vx;
-		//cout << "x = " << x << endl;
+		cout << "x = " << x << endl;
 		y = y + deltaT*vy;
 		//cout << "y = " << y << endl;
 		r = sqrt((x*x) + (y*y));
@@ -100,7 +101,7 @@ int main()
 		secondfile << y << endl;
 		
 	}
-	cout << "r = " << r << endl;
+	
 	mehfile.close();
 	secondfile.close();
 	int integer;
