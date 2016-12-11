@@ -46,7 +46,7 @@ int main()
 	double ax, ay;
 
 	//timestep, h, for the Runge-Kutta method will be 1 day. h is given in seconds.
-	double h = 24 * 3600;
+	double h = 12 * 3600;
 
 	//various useful Runge-Kutta things defined here
 	double dx1, dx2, dx3, dx4, dy1, dy2, dy3, dy4;
@@ -60,7 +60,7 @@ int main()
 	secondfile.open("yvalues.txt");
 
 	int j;
-	for (j = 0; j < 366; j++) {
+	for (j = 0; j < 2*365400; j++) {
 		cout << "ROUND " << j + 1 << endl;
 
 		ax = accelx(x, y);
