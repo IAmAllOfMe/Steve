@@ -45,13 +45,19 @@ int main()
 	//acceleration in x and y directions defined
 	double ax, ay;
 
-	//timestep, h, for the Runge-Kutta method will be 1 day. h is given in seconds.
+	//timestep, h, for the Runge-Kutta method will be 12 hours. h is given in seconds.
 	double h = 12 * 3600;
 
 	//various useful Runge-Kutta things defined here
 	double dx1, dx2, dx3, dx4, dy1, dy2, dy3, dy4;
 	double dvx1, dvx2, dvx3, dvx4, dvy1, dvy2, dvy3, dvy4;
 	double dx, dy, dvx, dvy;
+
+	//Set initial values for sigma, surface denisty profile of the protoplanetary disc
+	double sigma1 = 2700; // in g/cm^2
+
+	//set initial value for M50, the mass of the disc within 50au of the sun. 
+	double M50 = 0.1*Ms;
 
 	//save the recorded x and y values in text files
 	ofstream mehfile;
