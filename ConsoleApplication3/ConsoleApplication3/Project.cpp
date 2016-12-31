@@ -15,21 +15,38 @@ using namespace std;
 float G = 6.67*pow(10, -11);//gravitational constant in SI units
 float Ms = 1.99*pow(10, 30);//mass of sun in kg
 float Me = 5.97*pow(10, 24);//mass of earth in kg
+float sigma1 = 2700; // in g/cm^2
 
 //Declare acceleration functions
-double accelx(double x, double y);
-double accely(double x, double y);
+double accelx(double x, double y, double vx);
+double accely(double x, double y, double vx);
 
 //Define function for accleration in x direction
-double accelx(double x, double y) {
+double accelx(double x, double y, double vx) {
 	double r = sqrt((x*x) + (y*y));
-   double ax = (-G*(Ms+Me)*x)/pow(r, 3);
+
+	double sigma = sigma1*1.49598*pow(10, 11) / r;
+
+	double tmig = 6 * pow(10, 5)*(1000 / (sigma*1.49598*pow(10, 11)));
+	//tmig value is actually the above multiplied by Me/Mp where Mp is the mass of the planet, but in this case Me = Mp, so Me/Mp = 1
+
+	double tecc = 300 * (1000 / (sigma*1.49598*pow(10, 11)));
+	//As with tmig, we multiply also by Me/Mp = 1
+   
+	double ax = (-G*(Ms+Me)*x)/pow(r, 3) - vx/tmig - 2*vx/tecc;
 	return ax;
 }
 //define function for accleration in y direction
-double accely(double x, double y) {
+double accely(double x, double y, double vy) {
 	double r = sqrt((x*x) + (y*y));
-	double ay = (-G*(Ms+Me)*y)/pow(r, 3 );
+
+	double sigma = sigma1*1.49598*pow(10, 11) / r;
+
+	double tmig = 6 * pow(10, 5)*(1000 / (sigma*1.49598*pow(10, 11)));
+	
+	double tecc = 300 * (1000 / (sigma*1.49598*pow(10, 11)));
+
+	double ay = (-G*(Ms+Me)*y)/pow(r, 3 ) - vy/tmig - 2*vy/tecc;
 	return ay;
 }
 
@@ -53,8 +70,7 @@ int main()
 	double dvx1, dvx2, dvx3, dvx4, dvy1, dvy2, dvy3, dvy4;
 	double dx, dy, dvx, dvy;
 
-	//Set initial values for sigma, surface denisty profile of the protoplanetary disc
-	double sigma1 = 2700; // in g/cm^2
+	//Declare sigma, surface denisty profile of the protoplanetary disc
 	double sigma;
 
 	//set initial value for M50, the mass of the disc within 50au of the sun. 
@@ -73,8 +89,8 @@ int main()
 	for (j = 0; j < 2*365400; j++) {
 		cout << "ROUND " << j + 1 << endl;
 
-		ax = accelx(x, y);
-		ay = accely(x, y);
+		ax = accelx(x, y, vx);
+		ay = accely(x, y, vy);
 		
 		dx1 = h*vx;
 		dy1 = h*vy;
@@ -83,18 +99,18 @@ int main()
 
 		dx2 = h*(vx + (dvx1 / 2));
 		dy2 = h*(vy + (dvy1 / 2));
-		dvx2 = h*accelx(x + dx1 / 2, y + dy1 / 2);
-		dvy2 = h*accely(x + dx1 / 2, y + dy1 / 2);
+		dvx2 = h*accelx(x + dx1 / 2, y + dy1 / 2, vx + dvx1/2);
+		dvy2 = h*accely(x + dx1 / 2, y + dy1 / 2, vy + dvy1/2);
 
 		dx3 = h*(vx + (dvx2 / 2));
 		dy3 = h*(vy + (dvy2 / 2));
-		dvx3 = h*accelx(x + dx2 / 2, y + dy2 / 2);
-		dvy3 = h*accely(x + dx2 / 2, y + dy2 / 2);
+		dvx3 = h*accelx(x + dx2 / 2, y + dy2 / 2, vx + dvx2/2);
+		dvy3 = h*accely(x + dx2 / 2, y + dy2 / 2, vy + dvy2/2);
 
 		dx4 = h*(vx + dvx3);
 		dy4 = h*(vy + dvy3);
-		dvx4 = h*accelx(x + dx3, y + dy3);
-		dvy4 = h*accely(x + dx3, y + dy3);
+		dvx4 = h*accelx(x + dx3, y + dy3, vx + dvx3/2);
+		dvy4 = h*accely(x + dx3, y + dy3, vy + dvy3/2);
 
 		dx = (dx1 + 2 * dx2 + 2 * dx3 + dx4) / 6;
 		dy = (dy1 + 2 * dy2 + 2 * dy3 + dy4) / 6;
@@ -106,16 +122,6 @@ int main()
 		vx = vx + dvx;
 		vy = vy + dvy;
 		cout << "x = " << x << endl;
-		r = sqrt(x*x + y*y);
-		cout << "r = " << r << endl;
-
-		sigma = sigma1*1.49598*pow(10, 11) / r;
-
-		tmig = 6 * pow(10, 5)*(1000 / (sigma*1.49598*pow(10, 11)));
-		//tmig value is actually the above multiplied by Me/Mp where Mp is the mass of the planet, but in this case Me = Mp, so Me/Mp = 1
-
-		tecc = 300*(1000 / (sigma*1.49598*pow(10, 11)));
-		//As with tmig, we multiply also by Me/Mp = 1
 
 		//storing generated x and y values
 		mehfile << x << endl;
