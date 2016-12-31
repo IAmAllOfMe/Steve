@@ -55,9 +55,13 @@ int main()
 
 	//Set initial values for sigma, surface denisty profile of the protoplanetary disc
 	double sigma1 = 2700; // in g/cm^2
+	double sigma;
 
 	//set initial value for M50, the mass of the disc within 50au of the sun. 
 	double M50 = 0.1*Ms;
+
+	//declare tmig and tecc, time for migration and eccentricity damping (see Terquem paper 2.2)
+	double tmig, tecc;
 
 	//save the recorded x and y values in text files
 	ofstream mehfile;
@@ -102,6 +106,16 @@ int main()
 		vx = vx + dvx;
 		vy = vy + dvy;
 		cout << "x = " << x << endl;
+		r = sqrt(x*x + y*y);
+		cout << "r = " << r << endl;
+
+		sigma = sigma1*1.49598*pow(10, 11) / r;
+
+		tmig = 6 * pow(10, 5)*(1000 / (sigma*1.49598*pow(10, 11)));
+		//tmig value is actually the above multiplied by Me/Mp where Mp is the mass of the planet, but in this case Me = Mp, so Me/Mp = 1
+
+		tecc = 300*(1000 / (sigma*1.49598*pow(10, 11)));
+		//As with tmig, we multiply also by Me/Mp = 1
 
 		//storing generated x and y values
 		mehfile << x << endl;
