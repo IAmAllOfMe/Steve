@@ -22,31 +22,31 @@ double accelx(double x, double y, double vx);
 double accely(double x, double y, double vx);
 
 //Define function for accleration in x direction
-double accelx(double x, double y, double vx) {
+double accelx(double x, double y, double vx, double vy) {
 	double r = sqrt((x*x) + (y*y));
+	double v = sqrt((vx*vx) + (vy*vy));
+	double sigma = sigma1 / r;// *1.49598*pow(10, 11);
 
-	double sigma = sigma1*1.49598*pow(10, 11) / r;
-
-	double tmig = 6 * pow(10, 5)*(1000 / (sigma*1.49598*pow(10, 11)));
+	double tmig = 6 * pow(10, 5)*(1000 / sigma);//*1.49598*pow(10, 11)));
 	//tmig value is actually the above multiplied by Me/Mp where Mp is the mass of the planet, but in this case Me = Mp, so Me/Mp = 1
 
-	double tecc = 300 * (1000 / (sigma*1.49598*pow(10, 11)));
+	double tecc = 300 * (1000 / (sigma));//*1.49598*pow(10, 11)));
 	//As with tmig, we multiply also by Me/Mp = 1
    
-	double ax = (-G*(Ms+Me)*x)/pow(r, 3) - vx/tmig - 2*vx/tecc;
+	double ax = (-G*(Ms+Me)*x)/pow(r, 3) - vx/tmig - (2/(pow(r,2)*tecc))*(vx*x+vy*y)*x;
 	return ax;
 }
 //define function for accleration in y direction
-double accely(double x, double y, double vy) {
+double accely(double x, double y, double vx, double vy) {
 	double r = sqrt((x*x) + (y*y));
+	double v = sqrt((vx*vx) + (vy*vy));
+	double sigma = sigma1 / r;//*1.49598*pow(10, 11)
 
-	double sigma = sigma1*1.49598*pow(10, 11) / r;
-
-	double tmig = 6 * pow(10, 5)*(1000 / (sigma*1.49598*pow(10, 11)));
+	double tmig = 6 * pow(10, 5)*(1000 / (sigma));// *1.49598*pow(10, 11)));
 	
-	double tecc = 300 * (1000 / (sigma*1.49598*pow(10, 11)));
+	double tecc = 300 * (1000 / (sigma));//*1.49598*pow(10, 11)));
 
-	double ay = (-G*(Ms+Me)*y)/pow(r, 3 ) - vy/tmig - 2*vy/tecc;
+	double ay = (-G*(Ms + Me)*y) / pow(r, 3) - vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	return ay;
 }
 
@@ -89,8 +89,8 @@ int main()
 	for (j = 0; j < 2*365400; j++) {
 		cout << "ROUND " << j + 1 << endl;
 
-		ax = accelx(x, y, vx);
-		ay = accely(x, y, vy);
+		ax = accelx(x, y, vx, vy);
+		ay = accely(x, y, vx, vy);
 		
 		dx1 = h*vx;
 		dy1 = h*vy;
@@ -99,18 +99,18 @@ int main()
 
 		dx2 = h*(vx + (dvx1 / 2));
 		dy2 = h*(vy + (dvy1 / 2));
-		dvx2 = h*accelx(x + dx1 / 2, y + dy1 / 2, vx + dvx1/2);
-		dvy2 = h*accely(x + dx1 / 2, y + dy1 / 2, vy + dvy1/2);
+		dvx2 = h*accelx(x + dx1 / 2, y + dy1 / 2, vx + dvx1 / 2, y + dvy1 / 2);
+		dvy2 = h*accely(x + dx1 / 2, y + dy1 / 2, x + dvx1 /  2, vy + dvy1 / 2);
 
 		dx3 = h*(vx + (dvx2 / 2));
 		dy3 = h*(vy + (dvy2 / 2));
-		dvx3 = h*accelx(x + dx2 / 2, y + dy2 / 2, vx + dvx2/2);
-		dvy3 = h*accely(x + dx2 / 2, y + dy2 / 2, vy + dvy2/2);
+		dvx3 = h*accelx(x + dx2 / 2, y + dy2 / 2, vx + dvx2 / 2, vy + dvy2 / 2);
+		dvy3 = h*accely(x + dx2 / 2, y + dy2 / 2, vx + dvx2 / 2, vy + dvy2 / 2);
 
 		dx4 = h*(vx + dvx3);
 		dy4 = h*(vy + dvy3);
-		dvx4 = h*accelx(x + dx3, y + dy3, vx + dvx3/2);
-		dvy4 = h*accely(x + dx3, y + dy3, vy + dvy3/2);
+		dvx4 = h*accelx(x + dx3, y + dy3, vx + dvx3 / 2, vy + dvy3 / 2);
+		dvy4 = h*accely(x + dx3, y + dy3, vx + dvx3 / 2, vy + dvy3 / 2);
 
 		dx = (dx1 + 2 * dx2 + 2 * dx3 + dx4) / 6;
 		dy = (dy1 + 2 * dy2 + 2 * dy3 + dy4) / 6;
