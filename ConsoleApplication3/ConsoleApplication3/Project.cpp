@@ -10,41 +10,47 @@
 #include <stdio.h>
 
 using namespace std;
+//WHAT MUST BE DONE:
+//tmig and tecc MUST be put into accelx and accely using the equations 10 and 11 in the Terquem paper
+//However in order to do this properly more reading and understanding of those equations is required
+
 
 //Define constants
 float G = 6.67*pow(10, -11);//gravitational constant in SI units
 float Ms = 1.99*pow(10, 30);//mass of sun in kg
 float Me = 5.97*pow(10, 24);//mass of earth in kg
-float sigma1 = 2700; // in g/cm^2
+float ty = 3.145*pow(10, 7);//number of seconds in a year
+float au = 1.49598*pow(10, 11); //one Astronomical Unit converted into metres
+float s1 = 2700; // in g/cm^2
+//s stands for sigma in the Terquem paper
+double tmig = 6 * pow(10, 5)*(1000 / s1)*ty;
+//tmig value is actually the above multiplied by Me/Mp where Mp is the mass of the planet, but in this case Me = Mp, so Me/Mp = 1
+//tmig is in years, so we multiply by ty to give it's value in seconds
+double tecc = 300 * (1000 / s1)*ty;
+//As with tmig, we multiply also by Me/Mp = 1
+//tecc is in years, so we multiply by ty to give it's value in seconds
+//IMPORTANT: These tecc and tmig values are FIXED for a planet at 1AU
 
 //Declare acceleration functions
-double accelx(double x, double y, double vx);
-double accely(double x, double y, double vx);
+double accelx(double x, double y, double vx, double vy);
+double accely(double x, double y, double vx, double vy);
 
 //Define function for accleration in x direction
 double accelx(double x, double y, double vx, double vy) {
 	double r = sqrt((x*x) + (y*y));
-	double v = sqrt((vx*vx) + (vy*vy));
-	double sigma = sigma1 / r;// *1.49598*pow(10, 11);
-
-	double tmig = 6 * pow(10, 5)*(1000 / sigma);//*1.49598*pow(10, 11)));
-	//tmig value is actually the above multiplied by Me/Mp where Mp is the mass of the planet, but in this case Me = Mp, so Me/Mp = 1
-
-	double tecc = 300 * (1000 / (sigma));//*1.49598*pow(10, 11)));
-	//As with tmig, we multiply also by Me/Mp = 1
-   
+	
+	double s = 0.1*(s1 /r)*au;
+	//using equations 1 and 7 in the Terquem paper
+	
 	double ax = (-G*(Ms+Me)*x)/pow(r, 3) - vx/tmig - (2/(pow(r,2)*tecc))*(vx*x+vy*y)*x;
 	return ax;
 }
-//define function for accleration in y direction
+//Define function for accleration in y direction
 double accely(double x, double y, double vx, double vy) {
 	double r = sqrt((x*x) + (y*y));
-	double v = sqrt((vx*vx) + (vy*vy));
-	double sigma = sigma1 / r;//*1.49598*pow(10, 11)
-
-	double tmig = 6 * pow(10, 5)*(1000 / (sigma));// *1.49598*pow(10, 11)));
 	
-	double tecc = 300 * (1000 / (sigma));//*1.49598*pow(10, 11)));
+	double s = 0.1*(s1 / r)*au;
+	//using equations 1 and 7 in the Terquem paper
 
 	double ay = (-G*(Ms + Me)*y) / pow(r, 3) - vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	return ay;
@@ -52,8 +58,8 @@ double accely(double x, double y, double vx, double vy) {
 
 int main()
 {   
-	//initial distance = 1au in x direction, 0 in y direction. Value given here in m
-	double x = 1.49598*pow(10, 11), y = 0;
+	//initial distance = 9au in x direction, 0 in y direction. Value given here in m
+	double x = au, y = 0;
 	double r = sqrt(x*x + y*y);
 	
 	//initial velocity = mean Earth velocity in y direction, 0 in x direction. Value here given in m/s
@@ -65,19 +71,10 @@ int main()
 	//timestep, h, for the Runge-Kutta method will be 12 hours. h is given in seconds.
 	double h = 12 * 3600;
 
-	//various useful Runge-Kutta things defined here
+	//various useful Runge-Kutta things declared here
 	double dx1, dx2, dx3, dx4, dy1, dy2, dy3, dy4;
 	double dvx1, dvx2, dvx3, dvx4, dvy1, dvy2, dvy3, dvy4;
 	double dx, dy, dvx, dvy;
-
-	//Declare sigma, surface denisty profile of the protoplanetary disc
-	double sigma;
-
-	//set initial value for M50, the mass of the disc within 50au of the sun. 
-	double M50 = 0.1*Ms;
-
-	//declare tmig and tecc, time for migration and eccentricity damping (see Terquem paper 2.2)
-	double tmig, tecc;
 
 	//save the recorded x and y values in text files
 	ofstream mehfile;
@@ -121,7 +118,7 @@ int main()
 		y = y + dy;
 		vx = vx + dvx;
 		vy = vy + dvy;
-		cout << "x = " << x << endl;
+		cout << "r = " << sqrt((x*x)+(y*y)) << endl;
 
 		//storing generated x and y values
 		mehfile << x << endl;
