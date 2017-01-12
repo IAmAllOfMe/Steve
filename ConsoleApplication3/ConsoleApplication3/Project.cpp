@@ -23,15 +23,9 @@ float ty = 3.145*pow(10, 7);//number of seconds in a year
 float au = 1.49598*pow(10, 11); //one Astronomical Unit converted into metres
 float H = 0.05*au;//height of disk
 float pi = 3.1415926536;
+float n = 1;
 float s1 = 2700; // in g/cm^2
 //s stands for sigma in the Terquem paper
-//double tmig = 6 * pow(10, 5)*(1000 / s1)*ty;
-//tmig value is actually the above multiplied by Me/Mp where Mp is the mass of the planet, but in this case Me = Mp, so Me/Mp = 1
-//tmig is in years, so we multiply by ty to give it's value in seconds
-//double tecc = 300 * (1000 / s1)*ty;
-//As with tmig, we multiply also by Me/Mp = 1
-//tecc is in years, so we multiply by ty to give it's value in seconds
-//IMPORTANT: These tecc and tmig values are FIXED for a planet at 1AU
 
 //Declare acceleration functions
 double accelx(double x, double y, double vx, double vy);
@@ -44,9 +38,9 @@ double accelx(double x, double y, double vx, double vy) {
 	double s = 0.1*(s1 /r)*au;
 	//using equations 1 and 7 in the Terquem paper
 
-	double tmig = (2 / 3.8)*(Ms / Me)*pow(H / r, 2)*(Ms / (2 * pi*s*au*au))*pow(au / au, 0.5);
+	double tmig = ty*(2 / (2.7+(1.1*n)))*(Ms / Me)*pow(H / r, 2)*(Ms / (2 * pi*s1*s1))*pow(au / au, 0.5);
 		//assuming eccentricity = 0
-	double tecc = 0.1*(Ms/Me)*pow(H/r,4)*(Ms / (2 * pi*s*au*au))*pow(au / au, 0.5);
+	double tecc = ty*0.1*(Ms/Me)*pow(H/r,4)*(Ms / (2 * pi*s1*s1))*pow(au / au, 0.5);
 	//assuming eccentricity = 0
 
 	double ax = (-G*(Ms+Me)*x)/pow(r, 3) - vx/tmig - (2/(pow(r,2)*tecc))*(vx*x+vy*y)*x;
@@ -59,11 +53,11 @@ double accely(double x, double y, double vx, double vy) {
 	double s = 0.1*(s1 / r)*au;
 	//using equations 1 and 7 in the Terquem paper
 
-	double tmig = ty*(2 / 3.8)*(Ms / Me)*pow(H / r, 2)*(Ms / (2 * pi*s*au*au))*pow(au / au, 0.5);
+	double tmig = ty*(2 / 3.8)*(Ms / Me)*pow(H / r, 2)*(Ms / (2 * pi*s1*s1))*pow(au / au, 0.5);
 	//assuming eccentricity = 0
 	//tmig is in years, so we multiply by ty to give it's value in seconds
 	
-	double tecc = ty*0.1*(Ms / Me)*pow(H / r, 4)*(Ms / (2 * pi*s*au*au))*pow(au / au, 0.5);
+	double tecc = ty*0.1*(Ms / Me)*pow(H / r, 4)*(Ms / (2 * pi*s1*s1))*pow(au / au, 0.5);
 	//assuming eccentricity = 0
 	//tecc is in years, so we multiply by ty to give it's value in seconds
 
@@ -133,7 +127,8 @@ int main()
 		y = y + dy;
 		vx = vx + dvx;
 		vy = vy + dvy;
-		cout << "x = " << x << endl;
+		r = sqrt((x*x) + (y*y));
+		cout << "r = " << r << endl;
 
 		//storing generated x and y values
 		mehfile << x << endl;
