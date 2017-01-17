@@ -42,8 +42,13 @@ double accelx(double x, double y, double vx, double vy) {
 		//assuming eccentricity = 0
 	double tecc = ty*0.1*(Ms/Me)*pow(H/r,4)*(Ms / (2 * pi*s1*s1))*pow(au / au, 0.5);
 	//assuming eccentricity = 0
-
-	double ax = (-G*(Ms+Me)*x)/pow(r, 3) - vx/tmig - (2/(pow(r,2)*tecc))*(vx*x+vy*y)*x;
+	double ax;
+	if(9*au < r < 11*au){
+	 ax = (-G*(Ms + Me)*x) / pow(r, 3) + vx / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
+	}
+	else {
+	 ax = (-G*(Ms + Me)*x) / pow(r, 3) - vx / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
+	}
 	return ax;
 }
 //Define function for accleration in y direction
@@ -60,19 +65,24 @@ double accely(double x, double y, double vx, double vy) {
 	double tecc = ty*0.1*(Ms / Me)*pow(H / r, 4)*(Ms / (2 * pi*s1*s1))*pow(au / au, 0.5);
 	//assuming eccentricity = 0
 	//tecc is in years, so we multiply by ty to give it's value in seconds
-
-	double ay = (-G*(Ms + Me)*y) / pow(r, 3) - vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
+	double ay;
+	if(9*au < r < 11*au){
+	 ay = (-G*(Ms + Me)*y) / pow(r, 3) + vy / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
+	}
+	else {
+		 ay = (-G*(Ms + Me)*y) / pow(r, 3) - vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
+	}
 	return ay;
 }
 
 int main()
 {   
 	//initial distance = 9au in x direction, 0 in y direction. Value given here in m
-	double x = au, y = 0;
+	double x = 9*au, y = 0;
 	double r = sqrt(x*x + y*y);
 	
 	//initial velocity = mean Earth velocity in y direction, 0 in x direction. Value here given in m/s
-	double vx = 0, vy = 30000;
+	double vx = 0, vy = 10000;
 
 	//acceleration in x and y directions defined
 	double ax, ay;
@@ -92,8 +102,8 @@ int main()
 	secondfile.open("yvalues.txt");
 
 	int j;
-	for (j = 0; j < 2*365400; j++) {
-		cout << "ROUND " << j + 1 << endl;
+	for (j = 0; j < 2* 365400; j++) {
+		//cout << "ROUND " << j + 1 << endl;
 
 		ax = accelx(x, y, vx, vy);
 		ay = accely(x, y, vx, vy);
