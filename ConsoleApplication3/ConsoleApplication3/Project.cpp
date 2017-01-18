@@ -78,11 +78,11 @@ double accely(double x, double y, double vx, double vy) {
 int main()
 {   
 	//initial distance = 9au in x direction, 0 in y direction. Value given here in m
-	double x = 9*au, y = 0;
+	double x = 10*au, y = 0;
 	double r = sqrt(x*x + y*y);
 	
 	//initial velocity = mean Earth velocity in y direction, 0 in x direction. Value here given in m/s
-	double vx = 0, vy = 10000;
+	double vx = 0, vy = 9419.5;
 
 	//acceleration in x and y directions defined
 	double ax, ay;
