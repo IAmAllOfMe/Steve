@@ -36,21 +36,22 @@ double accelx(double x, double y, double vx, double vy, double t) {
 	double r = sqrt((x*x) + (y*y));
 	double H = 0.05*r;
 	double s;
-	if (9 * au < r < 11 * au) {
+	double r2 = r20 + (10 * au - r20)*t / (3.2*pow(10, 6));
+	if (3 * au < r < r2) {
 	 s = 0;
 	}
 	else {
 		 s = 0.1*(s1 / r)*au;
 	}
-	//using equations 1 and 7 in the Terquem paper
+	//using equations 1 and 7 in the Terquem paper. At some point she also multiplies the whole thing by 0.1
 
-	double tmig = ty*(2 / (2.7+(1.1*n)))*(Ms / Me)*pow(H / r, 2)*(Ms / (2 * pi*s*s))*pow(au / au, 0.5);
+	double tmig = ty*(2 / (2.7+(1.1*n)))*(Ms / Me)*pow(H / r, 2)*(Ms / (2 * pi*s*s))*pow(au / r, 0.5);
 		//assuming eccentricity = 0
-	double tecc = ty*0.1*(Ms/Me)*pow(H/r,4)*(Ms / (2 * pi*s*s))*pow(au / au, 0.5);
+	double tecc = ty*0.1*(Ms/Me)*pow(H/r,4)*(Ms / (2 * pi*s*s))*pow(au / r, 0.5);
 	//assuming eccentricity = 0
 	double ax;
-	double r2 = r20 + (10 * au - r20)*t / (3.2*pow(10, 6));
-	if(r2-(au/2) < r < r2+(au/2)){
+	
+	if(r2 < r < r2+(au/2)){
 	 ax = (-G*(Ms + Me)*x) / pow(r, 3) + vx / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
 	}
 	else {
@@ -63,7 +64,8 @@ double accely(double x, double y, double vx, double vy, double t) {
 	double r = sqrt((x*x) + (y*y));
 	double H = 0.05*r;
 	double s;
-	if (9 * au < r < 11 * au) {
+	double r2 = r20 + (10 * au - r20)*t / (3.2*pow(10, 6));
+	if (3 * au < r < r2) {
 		s = 0;
 	}
 	else {
@@ -71,33 +73,34 @@ double accely(double x, double y, double vx, double vy, double t) {
 	}
 
 	//using equations 1 and 7 in the Terquem paper
-
-	double tmig = ty*(2 / 3.8)*(Ms / Me)*pow(H / r, 2)*(Ms / (2 * pi*s*s))*pow(au / au, 0.5);
+	
+	double tmig = ty*(2 / 3.8)*(Ms / Me)*pow(H / r, 2)*(Ms / (2 * pi*s*s))*pow(au/ r, 0.5);
 	//assuming eccentricity = 0
 	//tmig is in years, so we multiply by ty to give it's value in seconds
 	
-	double tecc = ty*0.1*(Ms / Me)*pow(H / r, 4)*(Ms / (2 * pi*s*s))*pow(au / au, 0.5);
+	double tecc = ty*0.1*(Ms / Me)*pow(H / r, 4)*(Ms / (2 * pi*s*s))*pow(au / r, 0.5);
 	//assuming eccentricity = 0
 	//tecc is in years, so we multiply by ty to give it's value in seconds
 	double ay;
-	double r2 = r20 + (10 * au - r20)*t / (3.2*pow(10, 6));
-	if(r2-(au/2) < r < r2+(au/2)){
+	
+	if(r2 < r < r2+(au/2)){
 	 ay = (-G*(Ms + Me)*y) / pow(r, 3) + vy / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	}
 	else {
 		 ay = (-G*(Ms + Me)*y) / pow(r, 3) - vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	}
+	//cout << tecc << endl; 
 	return ay;
 }
 
 int main()
 {   
 	//initial distance = 9au in x direction, 0 in y direction. Value given here in m
-	double x = 10*au, y = 0;
+	double x = 3.55*au, y = 0;
 	double r = sqrt(x*x + y*y);
 	
-	//initial velocity = mean Earth velocity in y direction, 0 in x direction. Value here given in m/s
-	double vx = 0, vy = 9419.5;
+	//initial velocity = circular orbit velocity in y direction, 0 in x direction. Value here given in m/s
+	double vx = 0, vy = sqrt(G*Ms/x);
 
 	//acceleration in x and y directions defined
 	double ax, ay;
@@ -116,7 +119,7 @@ int main()
 	ofstream secondfile;
 	secondfile.open("yvalues.txt");
 
-	double t;//time passed in years
+	double t = 0;//time passed in years
 	int j;
 	for (j = 0; j < 2* 365400; j++) {
 		//cout << "ROUND " << j + 1 << endl;
@@ -156,7 +159,8 @@ int main()
 		vx = vx + dvx;
 		vy = vy + dvy;
 		r = sqrt((x*x) + (y*y));
-		cout << "r = " << r/au << " AU" << endl;
+		//cout << "Year" << t << endl;
+		cout << "r = " << r << endl;
 
 		//storing generated x and y values
 		mehfile << x << endl;
