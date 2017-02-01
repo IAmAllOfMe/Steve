@@ -18,10 +18,10 @@ float Me = 5.97*pow(10, 24);//mass of earth in kg
 float ty = 3.145*pow(10, 7);//number of seconds in a year
 float au = 1.49598*pow(10, 11); //one Astronomical Unit converted into metres
 float pi = 3.1415926536;
-float n = 1;
 float r20 = 3 * au;//initial outer disc inner edge
 float s1 = 27000;// in kg/m^2
 //s stands for sigma in the Terquem paper
+//also, disk aspect ratio = 0.05
 
 //Declare acceleration functions
 double accelx(double x, double y, double vx, double vy, double t);
@@ -30,7 +30,7 @@ double accely(double x, double y, double vx, double vy, double t);
 //Define function for accleration in x direction
 double accelx(double x, double y, double vx, double vy, double t) {
 	double r = sqrt((x*x) + (y*y));
-	double H = 0.05*r;
+	
 	double s;
 	double r2 = r20 + (10 * au - r20)*t / (3.2*pow(10, 6));
 	if ( r < r2) {
@@ -44,12 +44,12 @@ double accelx(double x, double y, double vx, double vy, double t) {
 	
 	double tmig = ty*(2 /3.8)*(Ms / Me)*pow(0.05, 2)*(Ms / (2*pi*s*au*au))*pow(au / r, 0.5);
 		//assuming eccentricity = 0
-
+	
 	double tecc = 0.1*ty*(Ms/Me)*pow(0.05,4)*(Ms / (2 * pi*s*au*au))*pow(au / r, 0.5);
 	//assuming eccentricity = 0
 	double ax;
 	
-	if(r < r2+(au/4)){
+    if(r < r2+(au/4)){
 		ax = (-G*(Ms + Me)*x) / pow(r, 3) + vx / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
 	}
 	else {
@@ -61,7 +61,6 @@ double accelx(double x, double y, double vx, double vy, double t) {
 //Define function for accleration in y direction
 double accely(double x, double y, double vx, double vy, double t) {
 	double r = sqrt((x*x) + (y*y));
-	double H = 0.05*r;
 	double s;
 	double r2 = r20 + (10 * au - r20)*t / (3.2*pow(10, 6));
 	
@@ -83,7 +82,7 @@ double accely(double x, double y, double vx, double vy, double t) {
 	//assuming eccentricity = 0
 	//tecc is in years, so we multiply by ty to give it's value in seconds
 	double ay;
-	//cout << tmig << endl;
+	
 	if(r < r2+(au/4)){
 		ay = (-G*(Ms + Me)*y) / pow(r, 3) + vy / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	}
@@ -91,7 +90,7 @@ double accely(double x, double y, double vx, double vy, double t) {
 		
 		ay = (-G*(Ms + Me)*y) / pow(r, 3) -vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	}
-	//cout << tecc << endl; 
+	 
 	return ay;
 }
 
@@ -161,7 +160,7 @@ int main()
 		vy = vy + dvy;
 		r = sqrt((x*x) + (y*y));
 		//cout << "Year" << t << endl;
-		cout << "r = " << r / au << " AU" << endl;
+	  // cout << "r = " << r / au << " AU" << endl;
 		
 		//storing generated x and y values
 		mehfile << x << endl;
