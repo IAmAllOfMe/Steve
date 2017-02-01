@@ -10,10 +10,6 @@
 #include <stdio.h>
 
 using namespace std;
-//WHAT MUST BE DONE:
-//tmig and tecc MUST be put into accelx and accely using the equations 10 and 11 in the Terquem paper
-//However in order to do this properly more reading and understanding of those equations is required
-
 
 //Define constants
 float G = 6.67*pow(10, -11);//gravitational constant in SI units
@@ -24,7 +20,7 @@ float au = 1.49598*pow(10, 11); //one Astronomical Unit converted into metres
 float pi = 3.1415926536;
 float n = 1;
 float r20 = 3 * au;//initial outer disc inner edge
-float s1 = 2700000;// in kg/m^3
+float s1 = 27000;// in kg/m^2
 //s stands for sigma in the Terquem paper
 
 //Declare acceleration functions
@@ -46,18 +42,19 @@ double accelx(double x, double y, double vx, double vy, double t) {
 	}
 	//using equations 1 and 7 in the Terquem paper. At some point she also multiplies the whole thing by 0.1
 	
-	double tmig = ty*(2 / (2.7+(1.1*n)))*(Ms / Me)*pow(H / r, 2)*(Ms / (2 * pi*s*s))*pow(au / r, 0.5);
+	double tmig = ty*(2 /3.8)*(Ms / Me)*pow(0.05, 2)*(Ms / (2*pi*s*au*au))*pow(au / r, 0.5);
 		//assuming eccentricity = 0
-	double tecc = ty*0.1*(Ms/Me)*pow(H/r,4)*(Ms / (2 * pi*s*s))*pow(au / r, 0.5);
+
+	double tecc = 0.1*ty*(Ms/Me)*pow(0.05,4)*(Ms / (2 * pi*s*au*au))*pow(au / r, 0.5);
 	//assuming eccentricity = 0
 	double ax;
 	
-	if(r < r2+(au/2)){
-	 ax = (-G*(Ms + Me)*x) / pow(r, 3) + vx / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
+	if(r < r2+(au/4)){
+		ax = (-G*(Ms + Me)*x) / pow(r, 3) + vx / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
 	}
 	else {
 		
-	 ax = (-G*(Ms + Me)*x) / pow(r, 3) - vx / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
+		ax = (-G*(Ms + Me)*x) / pow(r, 3) - vx / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
 	}
 	return ax;
 }
@@ -78,21 +75,21 @@ double accely(double x, double y, double vx, double vy, double t) {
 	
 	//using equations 1 and 7 in the Terquem paper
 	
-	double tmig = ty*(2 / 3.8)*(Ms / Me)*pow(H / r, 2)*(Ms / (2 * pi*s*s))*pow(au/ r, 0.5);
+	double tmig = ty*(2 / 3.8)*(Ms / Me)*pow(0.05, 2)*(Ms / (2 * pi*s*au*au))*pow(au / r, 0.5);
 	//assuming eccentricity = 0
 	//tmig is in years, so we multiply by ty to give it's value in seconds
 	
-	double tecc = 0.1*ty*(Ms / Me)*pow(H / r, 4)*(Ms / (2 * pi*s*s))*pow(au / r, 0.5);
+	double tecc = 0.1*ty*(Ms / Me)*pow(0.05, 4)*(Ms / (2 * pi*s*au*au))*pow(au / r, 0.5);
 	//assuming eccentricity = 0
 	//tecc is in years, so we multiply by ty to give it's value in seconds
 	double ay;
 	//cout << tmig << endl;
-	if(r < r2+(au/2)){
-	 ay = (-G*(Ms + Me)*y) / pow(r, 3) + vy / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
+	if(r < r2+(au/4)){
+		ay = (-G*(Ms + Me)*y) / pow(r, 3) + vy / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	}
 	else {
 		
-		 ay = (-G*(Ms + Me)*y) / pow(r, 3) - vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
+		ay = (-G*(Ms + Me)*y) / pow(r, 3) -vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	}
 	//cout << tecc << endl; 
 	return ay;
@@ -100,12 +97,12 @@ double accely(double x, double y, double vx, double vy, double t) {
 
 int main()
 {   
-	//initial distance = 9au in x direction, 0 in y direction. Value given here in m
-	double x = 3.55*au, y = 0;
+	//initial distance = 10au in x direction, 0 in y direction. Value given here in m
+	double x = 4*au, y = 0;
 	double r = sqrt(x*x + y*y);
 	
 	//initial velocity = circular orbit velocity in y direction, 0 in x direction. Value here given in m/s
-	double vx = 0, vy = sqrt(G*Ms/x);
+	double vx = 0, vy = sqrt((G*Ms)/x);
 
 	//acceleration in x and y directions defined
 	double ax, ay;
@@ -123,16 +120,12 @@ int main()
 	mehfile.open("xvalues.txt", ios::trunc);
 	ofstream secondfile;
 	secondfile.open("yvalues.txt");
-	double tmigtest1 = ty*(2 / (2.7 + (1.1*n)))*(Ms / Me)*pow(0.05, 2)*(Ms / (2 * pi*s1*s1*au*au))*pow(au / au, 0.5);
-	cout << "tmigtest1 = " << tmigtest1 << endl;
-	double tmigtest2 = (6*100000*1000)/2700;
-	cout << "tmigtest2 = " << tmigtest2 << endl;
 	double t = 0;//time passed in years
 	int j;
 	for (j = 0; j < 2* 365400; j++) {
 		//cout << "ROUND " << j + 1 << endl;
 		//j = 12 hours
-		t = j * 3600 / ty;
+		t = (j*12*3600)/ ty;
 
 		ax = accelx(x, y, vx, vy, t);
 		ay = accely(x, y, vx, vy, t);
@@ -168,8 +161,8 @@ int main()
 		vy = vy + dvy;
 		r = sqrt((x*x) + (y*y));
 		//cout << "Year" << t << endl;
-		//cout << "r = " << r << endl;
-
+		cout << "r = " << r / au << " AU" << endl;
+		
 		//storing generated x and y values
 		mehfile << x << endl;
 		secondfile << y << endl;
