@@ -34,7 +34,7 @@ double accelx(double x, double y, double vx, double vy, double t) {
 	double s;
 	double r2 = r20 + (10 * au - r20)*t / (3.2*pow(10, 6));
 	if ( r < r2) {
-	 s = 0;
+	 s = 0.000000000001;
 	}
 	else {
 
@@ -49,12 +49,12 @@ double accelx(double x, double y, double vx, double vy, double t) {
 	//assuming eccentricity = 0
 	double ax;
 	
-    if(r < r2+(au/4)){
-		ax = (-G*(Ms + Me)*x) / pow(r, 3) + vx / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
+   if(r < r2+(au/4)){
+		ax = (-G*(Ms + Me)*x) / pow(r, 3) + vx / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
 	}
 	else {
 		
-		ax = (-G*(Ms + Me)*x) / pow(r, 3) - vx / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
+		ax = (-G*(Ms + Me)*x) / pow(r, 3) - vx / tmig -(2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
 	}
 	return ax;
 }
@@ -65,7 +65,7 @@ double accely(double x, double y, double vx, double vy, double t) {
 	double r2 = r20 + (10 * au - r20)*t / (3.2*pow(10, 6));
 	
 	if ( r < r2) {
-		s = 0;
+		s = 0.000000000001;
 	}
 	else {
 		s = 0.1*(s1 / r)*au;
@@ -82,15 +82,17 @@ double accely(double x, double y, double vx, double vy, double t) {
 	//assuming eccentricity = 0
 	//tecc is in years, so we multiply by ty to give it's value in seconds
 	double ay;
-	
+	//cout << tmig/ty << endl;
 	if(r < r2+(au/4)){
-		ay = (-G*(Ms + Me)*y) / pow(r, 3) + vy / tmig + (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
+		ay = (-G*(Ms + Me)*y) / pow(r, 3) + vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	}
 	else {
 		
-		ay = (-G*(Ms + Me)*y) / pow(r, 3) -vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
+		ay = (-G*(Ms + Me)*y) / pow(r, 3) - vy / tmig -(2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	}
-	 
+		//cout << vx << "  " << vy << "  " << x << "  " << y << endl;
+		//int d;
+		//cin >> d;
 	return ay;
 }
 
@@ -136,8 +138,8 @@ int main()
 
 		dx2 = h*(vx + (dvx1 / 2));
 		dy2 = h*(vy + (dvy1 / 2));
-		dvx2 = h*accelx(x + dx1 / 2, y + dy1 / 2, vx + dvx1 / 2, y + dvy1 / 2, t);
-		dvy2 = h*accely(x + dx1 / 2, y + dy1 / 2, x + dvx1 /  2, vy + dvy1 / 2, t);
+		dvx2 = h*accelx(x + dx1 / 2, y + dy1 / 2, vx + dvx1 / 2, vy + dvy1 / 2, t);
+		dvy2 = h*accely(x + dx1 / 2, y + dy1 / 2, vx + dvx1 /  2, vy + dvy1 / 2, t);
 
 		dx3 = h*(vx + (dvx2 / 2));
 		dy3 = h*(vy + (dvy2 / 2));
@@ -160,7 +162,7 @@ int main()
 		vy = vy + dvy;
 		r = sqrt((x*x) + (y*y));
 		//cout << "Year" << t << endl;
-	  // cout << "r = " << r / au << " AU" << endl;
+	 cout << "r = " << r / au << " AU" << endl;
 		
 		//storing generated x and y values
 		mehfile << x << endl;
