@@ -33,7 +33,8 @@ double accelx(double x, double y, double vx, double vy, double t) {
 	
 	double s;
 	double r2 = r20 + (10 * au - r20)*t / (3.2*pow(10, 6));
-	if ( r < r2) {
+	
+	if (r > 0.9*r2 && r < 1.1*r2) {
 	 s = 0.000000000001;
 	}
 	else {
@@ -49,7 +50,7 @@ double accelx(double x, double y, double vx, double vy, double t) {
 	//assuming eccentricity = 0
 	double ax;
 	
-   if(r < r2+(au/4)){
+   if(r > 0.9*r2 && r < 1.1*r2){
 		ax = (-G*(Ms + Me)*x) / pow(r, 3) + vx / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*x;
 	}
 	else {
@@ -64,7 +65,7 @@ double accely(double x, double y, double vx, double vy, double t) {
 	double s;
 	double r2 = r20 + (10 * au - r20)*t / (3.2*pow(10, 6));
 	
-	if ( r < r2) {
+	if (r > 0.9*r2 && r < 1.1*r2) {
 		s = 0.000000000001;
 	}
 	else {
@@ -82,8 +83,9 @@ double accely(double x, double y, double vx, double vy, double t) {
 	//assuming eccentricity = 0
 	//tecc is in years, so we multiply by ty to give it's value in seconds
 	double ay;
-	//cout << tmig/ty << endl;
-	if(r < r2+(au/4)){
+	
+	if (r > 0.9*r2 && r < 1.1*r2) {
+		cout << "poop" << endl;
 		ay = (-G*(Ms + Me)*y) / pow(r, 3) + vy / tmig - (2 / (pow(r, 2)*tecc))*(vx*x + vy*y)*y;
 	}
 	else {
@@ -99,7 +101,7 @@ double accely(double x, double y, double vx, double vy, double t) {
 int main()
 {   
 	//initial distance = 10au in x direction, 0 in y direction. Value given here in m
-	double x = 4*au, y = 0;
+	double x = 3.32*au, y = 0;
 	double r = sqrt(x*x + y*y);
 	
 	//initial velocity = circular orbit velocity in y direction, 0 in x direction. Value here given in m/s
@@ -121,9 +123,13 @@ int main()
 	mehfile.open("xvalues.txt", ios::trunc);
 	ofstream secondfile;
 	secondfile.open("yvalues.txt");
+	ofstream thirdfile;
+	thirdfile.open("rvalues.txt");
+	ofstream goodgriefanotherfile;
+	goodgriefanotherfile.open("timeinyears.txt");
 	double t = 0;//time passed in years
 	int j;
-	for (j = 0; j < 2* 365400; j++) {
+	for (j = 0; j < 2* 365400000; j++) {
 		//cout << "ROUND " << j + 1 << endl;
 		//j = 12 hours
 		t = (j*12*3600)/ ty;
@@ -162,14 +168,18 @@ int main()
 		vy = vy + dvy;
 		r = sqrt((x*x) + (y*y));
 		//cout << "Year" << t << endl;
-	 cout << "r = " << r / au << " AU" << endl;
+	  cout << "r = " << r / au << " AU" << endl;
 		
 		//storing generated x and y values
 		mehfile << x << endl;
 		secondfile << y << endl;
+		thirdfile << r << endl;
+		goodgriefanotherfile << t << endl;
 	}
 	mehfile.close();
 	secondfile.close();
+	thirdfile.close();
+	goodgriefanotherfile.close();
 	//this final bit is only so my pop up window doesn't automatically close itself
 	int integer;
 		cout << "Insert any integer the press enter to exit." << endl;
